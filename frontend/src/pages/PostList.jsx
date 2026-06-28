@@ -1,42 +1,64 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getPosts } from '../api/posts';
+import { getPosts, deletePost } from '../api/posts';
 import styles from './PostList.module.css';
 
 const CATEGORIES = ['', 'General', 'Tech', 'Design', 'Business', 'Lifestyle'];
+const PAGE_SIZE = 10;
 
 export default function PostList() {
   const [posts, setPosts] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filters, setFilters] = useState({ status: '', category: '' });
+  const [deletingId, setDeletingId] = useState(null);
+
+  async function handleDelete(id) {
+    if (!window.confirm('Delete this post? This cannot be undone.')) return;
+    setDeletingId(id);
+    try {
+      await deletePost(id);
+      setPosts(ps => ps.filter(p => p.id !== id));
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
+  function changeFilters(update) {
+    setFilters(f => ({ ...f, ...update }));
+    setPage(1);
+  }
 
   useEffect(() => {
     setLoading(true);
-    const params = {};
+    const params = { page, limit: PAGE_SIZE };
     if (filters.status) params.status = filters.status;
     if (filters.category) params.category = filters.category;
 
     getPosts(params)
-      .then(res => setPosts(res.data))
+      .then(res => { setPosts(res.data); setTotal(res.total); })
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
-  }, [filters]);
+  }, [filters, page]);
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1>All Posts <span className={styles.count}>{posts.length}</span></h1>
+        <h1>All Posts <span className={styles.count}>{total}</span></h1>
         <Link to="/create" className={styles.btn}>+ New Post</Link>
       </div>
 
       <div className={styles.filters}>
-        <select value={filters.status} onChange={e => setFilters(f => ({ ...f, status: e.target.value }))}>
+        <select value={filters.status} onChange={e => changeFilters({ status: e.target.value })}>
           <option value="">All Statuses</option>
           <option value="published">Published</option>
           <option value="draft">Draft</option>
         </select>
-        <select value={filters.category} onChange={e => setFilters(f => ({ ...f, category: e.target.value }))}>
+        <select value={filters.category} onChange={e => changeFilters({ category: e.target.value })}>
           {CATEGORIES.map(c => <option key={c} value={c}>{c || 'All Categories'}</option>)}
         </select>
       </div>
@@ -50,6 +72,7 @@ export default function PostList() {
           <Link to="/create">Create your first post</Link>
         </div>
       ) : (
+        <>
         <div className={styles.tableWrapper}>
           <table className={styles.table}>
             <thead>
@@ -76,14 +99,43 @@ export default function PostList() {
                     </span>
                   </td>
                   <td className={styles.date}>{new Date(post.created_at).toLocaleDateString()}</td>
-                  <td>
+                  <td className={styles.actionCell}>
                     <Link to={`/posts/${post.id}`} className={styles.viewBtn}>View</Link>
+                    <button
+                      onClick={() => handleDelete(post.id)}
+                      disabled={deletingId === post.id}
+                      className={styles.deleteBtn}
+                    >
+                      {deletingId === post.id ? '…' : 'Delete'}
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+        {Math.ceil(total / PAGE_SIZE) > 1 && (
+          <div className={styles.pagination}>
+            <button
+              className={styles.pageBtn}
+              onClick={() => setPage(p => p - 1)}
+              disabled={page === 1}
+            >
+              ← Prev
+            </button>
+            <span className={styles.pageInfo}>
+              Page {page} of {Math.ceil(total / PAGE_SIZE)}
+            </span>
+            <button
+              className={styles.pageBtn}
+              onClick={() => setPage(p => p + 1)}
+              disabled={page >= Math.ceil(total / PAGE_SIZE)}
+            >
+              Next →
+            </button>
+          </div>
+        )}
+        </>
       )}
     </div>
   );

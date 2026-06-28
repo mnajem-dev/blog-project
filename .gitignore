@@ -23,3 +23,6 @@ npm-debug.log*
 # Editor
 .vscode/
 .idea/
+
+# Claude local settings (contains secrets)
+.claude/settings.local.json

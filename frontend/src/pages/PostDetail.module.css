@@ -4,16 +4,55 @@
   padding: 0 1.5rem;
 }
 
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
 .back {
   color: #a6adc8;
   text-decoration: none;
   font-size: 0.9rem;
-  display: inline-block;
-  margin-bottom: 1.5rem;
   transition: color 0.2s;
 }
 
 .back:hover { color: #cba6f7; }
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.editBtn {
+  background: #cba6f7;
+  color: #1e1e2e;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  transition: opacity 0.2s;
+}
+
+.editBtn:hover { opacity: 0.85; }
+
+.deleteBtn {
+  background: transparent;
+  color: #f38ba8;
+  border: 1px solid #f38ba8;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.deleteBtn:hover:not(:disabled) { background: #f38ba8; color: #1e1e2e; }
+.deleteBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .article {
   background: #1e1e2e;
