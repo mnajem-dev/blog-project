@@ -40,6 +40,27 @@
 
 .btn:hover { opacity: 0.85; }
 
+.searchBar {
+  margin-bottom: 0.75rem;
+}
+
+.searchInput {
+  width: 100%;
+  background: #181825;
+  border: 1px solid #45475a;
+  color: #cdd6f4;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.searchInput:focus { border-color: #cba6f7; }
+.searchInput::placeholder { color: #45475a; }
+
 .filters {
   display: flex;
   gap: 1rem;

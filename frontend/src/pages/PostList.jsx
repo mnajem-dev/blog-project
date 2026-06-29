@@ -12,7 +12,8 @@ export default function PostList() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [filters, setFilters] = useState({ status: '', category: '' });
+  const [filters, setFilters] = useState({ status: '', category: '', search: '' });
+  const [searchInput, setSearchInput] = useState('');
   const [deletingId, setDeletingId] = useState(null);
 
   async function handleDelete(id) {
@@ -34,10 +35,16 @@ export default function PostList() {
   }
 
   useEffect(() => {
+    const timer = setTimeout(() => changeFilters({ search: searchInput }), 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  useEffect(() => {
     setLoading(true);
     const params = { page, limit: PAGE_SIZE };
     if (filters.status) params.status = filters.status;
     if (filters.category) params.category = filters.category;
+    if (filters.search) params.search = filters.search;
 
     getPosts(params)
       .then(res => { setPosts(res.data); setTotal(res.total); })
@@ -50,6 +57,16 @@ export default function PostList() {
       <div className={styles.header}>
         <h1>All Posts <span className={styles.count}>{total}</span></h1>
         <Link to="/create" className={styles.btn}>+ New Post</Link>
+      </div>
+
+      <div className={styles.searchBar}>
+        <input
+          type="search"
+          className={styles.searchInput}
+          placeholder="Search by title, content, or author…"
+          value={searchInput}
+          onChange={e => setSearchInput(e.target.value)}
+        />
       </div>
 
       <div className={styles.filters}>

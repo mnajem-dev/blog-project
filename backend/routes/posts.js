@@ -14,7 +14,7 @@ function joinTags(tags) {
 router.get('/', async (req, res) => {
   try {
     const db = await getDb();
-    const { status, category } = req.query;
+    const { status, category, search } = req.query;
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 10));
     const offset = (page - 1) * limit;
@@ -25,6 +25,11 @@ router.get('/', async (req, res) => {
 
     if (status) { filters.push('status = ?'); params.push(status); }
     if (category) { filters.push('category = ?'); params.push(category); }
+    if (search) {
+      filters.push('(title LIKE ? OR content LIKE ? OR author LIKE ?)');
+      const term = `%${search}%`;
+      params.push(term, term, term);
+    }
     if (filters.length) where = ' WHERE ' + filters.join(' AND ');
 
     const { total } = await db.get(`SELECT COUNT(*) AS total FROM posts${where}`, params);
