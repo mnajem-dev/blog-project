@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getPost, updatePost } from '../api/posts';
+import PostPreview from '../components/PostPreview';
 import styles from './CreatePost.module.css';
 
 const CATEGORIES = ['General', 'Tech', 'Design', 'Business', 'Lifestyle'];
@@ -12,6 +13,7 @@ export default function EditPost() {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState('');
+  const [tab, setTab] = useState('write');
 
   useEffect(() => {
     getPost(id)
@@ -60,11 +62,19 @@ export default function EditPost() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.heading}>Edit Post</h1>
+      <div className={styles.pageHeader}>
+        <h1 className={styles.heading}>Edit Post</h1>
+        <div className={styles.tabs}>
+          <button type="button" className={`${styles.tab} ${tab === 'write' ? styles.activeTab : ''}`} onClick={() => setTab('write')}>Write</button>
+          <button type="button" className={`${styles.tab} ${tab === 'preview' ? styles.activeTab : ''}`} onClick={() => setTab('preview')}>Preview</button>
+        </div>
+      </div>
 
       {serverError && <p className={styles.serverError}>{serverError}</p>}
 
-      {form && (
+      {form && tab === 'preview' && <PostPreview {...form} />}
+
+      {form && tab === 'write' && (
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
           <div className={styles.field}>
             <label>Title *</label>
@@ -116,5 +126,6 @@ export default function EditPost() {
         </form>
       )}
     </div>
+
   );
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPost } from '../api/posts';
+import PostPreview from '../components/PostPreview';
 import styles from './CreatePost.module.css';
 
 const CATEGORIES = ['General', 'Tech', 'Design', 'Business', 'Lifestyle'];
@@ -13,6 +14,7 @@ export default function CreatePost() {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState('');
+  const [tab, setTab] = useState('write');
 
   function validate() {
     const e = {};
@@ -47,10 +49,19 @@ export default function CreatePost() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.heading}>New Post</h1>
+      <div className={styles.pageHeader}>
+        <h1 className={styles.heading}>New Post</h1>
+        <div className={styles.tabs}>
+          <button type="button" className={`${styles.tab} ${tab === 'write' ? styles.activeTab : ''}`} onClick={() => setTab('write')}>Write</button>
+          <button type="button" className={`${styles.tab} ${tab === 'preview' ? styles.activeTab : ''}`} onClick={() => setTab('preview')}>Preview</button>
+        </div>
+      </div>
 
       {serverError && <p className={styles.serverError}>{serverError}</p>}
 
+      {tab === 'preview' ? (
+        <PostPreview {...form} />
+      ) : (
       <form className={styles.form} onSubmit={handleSubmit} noValidate>
         <div className={styles.field}>
           <label>Title *</label>
@@ -100,6 +111,7 @@ export default function CreatePost() {
           </button>
         </div>
       </form>
+      )}
     </div>
   );
 }
