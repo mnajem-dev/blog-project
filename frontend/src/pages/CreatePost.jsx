@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPost } from '../api/posts';
 import PostPreview from '../components/PostPreview';
+import TagInput from '../components/TagInput';
 import styles from './CreatePost.module.css';
 
 const CATEGORIES = ['General', 'Tech', 'Design', 'Business', 'Lifestyle'];
 
-const INITIAL = { title: '', content: '', author: '', category: 'General', status: 'draft' };
+const INITIAL = { title: '', content: '', author: '', category: 'General', status: 'draft', tags: [] };
 
 export default function CreatePost() {
   const navigate = useNavigate();
@@ -100,6 +101,11 @@ export default function CreatePost() {
             rows={12}
           />
           {errors.content && <span className={styles.err}>{errors.content}</span>}
+        </div>
+
+        <div className={styles.field}>
+          <label>Tags</label>
+          <TagInput tags={form.tags} onChange={tags => setForm(f => ({ ...f, tags }))} />
         </div>
 
         <div className={styles.actions}>

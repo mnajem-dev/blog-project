@@ -1,6 +1,6 @@
 import styles from './PostPreview.module.css';
 
-export default function PostPreview({ title, content, author, category, status }) {
+export default function PostPreview({ title, content, author, category, status, tags = [] }) {
   const isEmpty = !title && !content && !author;
 
   if (isEmpty) {
@@ -22,6 +22,11 @@ export default function PostPreview({ title, content, author, category, status }
       <div className={styles.content}>
         {content || <em className={styles.placeholder}>No content yet.</em>}
       </div>
+      {tags.length > 0 && (
+        <div className={styles.tags}>
+          {tags.map(tag => <span key={tag} className={styles.tag}>{tag}</span>)}
+        </div>
+      )}
     </article>
   );
 }

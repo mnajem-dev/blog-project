@@ -49,6 +49,11 @@ export default function PostDetail() {
         <h1 className={styles.title}>{post.title}</h1>
         <p className={styles.author}>By {post.author}</p>
         <div className={styles.content}>{post.content}</div>
+        {post.tags && post.tags.length > 0 && (
+          <div className={styles.tags}>
+            {post.tags.map(tag => <span key={tag} className={styles.tag}>{tag}</span>)}
+          </div>
+        )}
       </article>
     </div>
   );

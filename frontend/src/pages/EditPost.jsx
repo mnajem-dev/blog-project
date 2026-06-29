@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getPost, updatePost } from '../api/posts';
 import PostPreview from '../components/PostPreview';
+import TagInput from '../components/TagInput';
 import styles from './CreatePost.module.css';
 
 const CATEGORIES = ['General', 'Tech', 'Design', 'Business', 'Lifestyle'];
@@ -23,6 +24,7 @@ export default function EditPost() {
         author: post.author,
         category: post.category,
         status: post.status,
+        tags: post.tags || [],
       }))
       .catch(e => setServerError(e.message));
   }, [id]);
@@ -113,6 +115,11 @@ export default function EditPost() {
               rows={12}
             />
             {errors.content && <span className={styles.err}>{errors.content}</span>}
+          </div>
+
+          <div className={styles.field}>
+            <label>Tags</label>
+            <TagInput tags={form.tags} onChange={tags => setForm(f => ({ ...f, tags }))} />
           </div>
 
           <div className={styles.actions}>

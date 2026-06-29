@@ -111,5 +111,22 @@
   padding-top: 1.5rem;
 }
 
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #313244;
+}
+
+.tag {
+  background: #313244;
+  color: #cba6f7;
+  font-size: 0.8rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+}
+
 .error { color: #f38ba8; }
 .loading { color: #a6adc8; }

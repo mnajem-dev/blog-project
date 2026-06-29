@@ -21,6 +21,10 @@ async function getDb() {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `);
+    // Idempotent migration: add tags column if it doesn't exist yet
+    try {
+      await db.exec(`ALTER TABLE posts ADD COLUMN tags TEXT NOT NULL DEFAULT ''`);
+    } catch (_) { /* column already exists */ }
   }
   return db;
 }
