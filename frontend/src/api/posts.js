@@ -51,3 +51,16 @@ export async function createPost(data) {
   }
   return res.json();
 }
+
+export async function bulkAction(ids, action) {
+  const res = await fetch(`${BASE}/bulk`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify({ ids, action }),
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Bulk action failed');
+  }
+  return res.json();
+}

@@ -163,4 +163,33 @@ router.delete('/:id', requireAuth, async (req, res) => {
   }
 });
 
+router.post('/bulk', requireAuth, async (req, res) => {
+  try {
+    const { ids, action } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0 || !ids.every(id => Number.isInteger(id))) {
+      return res.status(400).json({ error: 'ids must be a non-empty array of integers' });
+    }
+    if (!['publish', 'delete'].includes(action)) {
+      return res.status(400).json({ error: 'action must be publish or delete' });
+    }
+
+    const db = await getDb();
+    const placeholders = ids.map(() => '?').join(',');
+
+    if (action === 'delete') {
+      await db.run(`DELETE FROM posts WHERE id IN (${placeholders})`, ids);
+    } else {
+      const publishedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      await db.run(
+        `UPDATE posts SET status = 'published', published_at = COALESCE(published_at, ?) WHERE id IN (${placeholders})`,
+        [publishedAt, ...ids]
+      );
+    }
+
+    res.json({ updated: ids.length });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 module.exports = router;

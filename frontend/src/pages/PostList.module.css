@@ -80,6 +80,69 @@
 .error { color: #f38ba8; margin-bottom: 1rem; }
 .loading { color: #a6adc8; }
 
+.bulkBar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #313244;
+  border: 1px solid #45475a;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.bulkCount {
+  color: #cdd6f4;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-right: auto;
+}
+
+.bulkPublishBtn {
+  background: #a6e3a1;
+  color: #1e1e2e;
+  border: none;
+  padding: 0.35rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.bulkPublishBtn:hover:not(:disabled) { opacity: 0.85; }
+
+.bulkDeleteBtn {
+  background: transparent;
+  color: #f38ba8;
+  border: 1px solid #f38ba8;
+  padding: 0.35rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.bulkDeleteBtn:hover:not(:disabled) { background: #f38ba8; color: #1e1e2e; }
+
+.bulkClearBtn {
+  background: transparent;
+  color: #a6adc8;
+  border: 1px solid #45475a;
+  padding: 0.35rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.bulkClearBtn:hover:not(:disabled) { background: #45475a; }
+
+.bulkPublishBtn:disabled,
+.bulkDeleteBtn:disabled,
+.bulkClearBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
 .empty {
   text-align: center;
   padding: 3rem;
@@ -146,6 +209,18 @@
 }
 
 .table tbody tr:hover { background: #252536; }
+
+.selectedRow { background: #29293d !important; }
+
+.checkboxCell {
+  width: 2rem;
+  text-align: center;
+}
+
+.checkboxCell input {
+  cursor: pointer;
+  accent-color: #cba6f7;
+}
 
 .title {
   max-width: 320px;

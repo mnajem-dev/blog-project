@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getPosts, deletePost } from '../api/posts';
+import { getPosts, deletePost, bulkAction } from '../api/posts';
 import styles from './PostList.module.css';
 
 const CATEGORIES = ['', 'General', 'Tech', 'Design', 'Business', 'Lifestyle'];
@@ -32,12 +32,58 @@ export default function PostList() {
   const [searchInput, setSearchInput] = useState('');
   const [deletingId, setDeletingId] = useState(null);
   const [sort, setSort] = useState({ sortBy: 'date', sortOrder: 'desc' });
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  const [bulkRunning, setBulkRunning] = useState(false);
 
   function toggleSort(column) {
     setSort(s => s.sortBy === column
       ? { sortBy: column, sortOrder: s.sortOrder === 'asc' ? 'desc' : 'asc' }
       : { sortBy: column, sortOrder: 'asc' });
     setPage(1);
+  }
+
+  function toggleSelected(id) {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    setSelectedIds(prev =>
+      prev.size === posts.length ? new Set() : new Set(posts.map(p => p.id))
+    );
+  }
+
+  async function handleBulkPublish() {
+    const ids = Array.from(selectedIds);
+    setBulkRunning(true);
+    try {
+      await bulkAction(ids, 'publish');
+      setPosts(ps => ps.map(p => ids.includes(p.id) ? { ...p, status: 'published' } : p));
+      setSelectedIds(new Set());
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setBulkRunning(false);
+    }
+  }
+
+  async function handleBulkDelete() {
+    const ids = Array.from(selectedIds);
+    if (!window.confirm(`Delete ${ids.length} selected post${ids.length === 1 ? '' : 's'}? This cannot be undone.`)) return;
+    setBulkRunning(true);
+    try {
+      await bulkAction(ids, 'delete');
+      setPosts(ps => ps.filter(p => !ids.includes(p.id)));
+      setTotal(t => t - ids.length);
+      setSelectedIds(new Set());
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setBulkRunning(false);
+    }
   }
 
   async function handleDelete(id) {
@@ -71,7 +117,7 @@ export default function PostList() {
     if (filters.search) params.search = filters.search;
 
     getPosts(params)
-      .then(res => { setPosts(res.data); setTotal(res.total); })
+      .then(res => { setPosts(res.data); setTotal(res.total); setSelectedIds(new Set()); })
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, [filters, page, sort]);
@@ -105,6 +151,22 @@ export default function PostList() {
       </div>
 
       {error && <p className={styles.error}>{error}</p>}
+
+      {selectedIds.size > 0 && (
+        <div className={styles.bulkBar}>
+          <span className={styles.bulkCount}>{selectedIds.size} selected</span>
+          <button className={styles.bulkPublishBtn} onClick={handleBulkPublish} disabled={bulkRunning}>
+            {bulkRunning ? 'Working…' : 'Publish Selected'}
+          </button>
+          <button className={styles.bulkDeleteBtn} onClick={handleBulkDelete} disabled={bulkRunning}>
+            {bulkRunning ? 'Working…' : 'Delete Selected'}
+          </button>
+          <button className={styles.bulkClearBtn} onClick={() => setSelectedIds(new Set())} disabled={bulkRunning}>
+            Clear
+          </button>
+        </div>
+      )}
+
       {loading ? (
         <p className={styles.loading}>Loading...</p>
       ) : posts.length === 0 ? (
@@ -118,6 +180,14 @@ export default function PostList() {
           <table className={styles.table}>
             <thead>
               <tr>
+                <th className={styles.checkboxCell}>
+                  <input
+                    type="checkbox"
+                    checked={posts.length > 0 && selectedIds.size === posts.length}
+                    onChange={toggleSelectAll}
+                    aria-label="Select all posts on this page"
+                  />
+                </th>
                 <SortableHeader column="id" sort={sort} onSort={toggleSort}>#</SortableHeader>
                 <SortableHeader column="title" sort={sort} onSort={toggleSort}>Title</SortableHeader>
                 <SortableHeader column="author" sort={sort} onSort={toggleSort}>Author</SortableHeader>
@@ -129,7 +199,15 @@ export default function PostList() {
             </thead>
             <tbody>
               {posts.map(post => (
-                <tr key={post.id}>
+                <tr key={post.id} className={selectedIds.has(post.id) ? styles.selectedRow : ''}>
+                  <td className={styles.checkboxCell}>
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(post.id)}
+                      onChange={() => toggleSelected(post.id)}
+                      aria-label={`Select ${post.title}`}
+                    />
+                  </td>
                   <td>{post.id}</td>
                   <td className={styles.title}>
                     {post.title}
