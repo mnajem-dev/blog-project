@@ -210,8 +210,15 @@ export default function PostList() {
                   </td>
                   <td>{post.id}</td>
                   <td className={styles.title}>
-                    {post.title}
-                    {post.excerpt && <p className={styles.excerpt}>{post.excerpt}</p>}
+                    <div className={styles.titleCell}>
+                      {post.featured_image && (
+                        <img src={post.featured_image} alt="" className={styles.thumbnail} />
+                      )}
+                      <div>
+                        {post.title}
+                        {post.excerpt && <p className={styles.excerpt}>{post.excerpt}</p>}
+                      </div>
+                    </div>
                   </td>
                   <td>{post.author}</td>
                   <td><span className={styles.category}>{post.category}</span></td>

@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getPost, updatePost } from '../api/posts';
+import { getPost, updatePost, uploadFeaturedImage, removeFeaturedImage } from '../api/posts';
 import PostPreview from '../components/PostPreview';
 import TagInput from '../components/TagInput';
 import MarkdownToolbar from '../components/MarkdownToolbar';
+import FeaturedImageField from '../components/FeaturedImageField';
 import styles from './CreatePost.module.css';
 
 const CATEGORIES = ['General', 'Tech', 'Design', 'Business', 'Lifestyle'];
@@ -18,11 +19,15 @@ export default function EditPost() {
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState('');
   const [tab, setTab] = useState('write');
+  const [featuredImage, setFeaturedImage] = useState(null);
+  const [imageUploading, setImageUploading] = useState(false);
+  const [imageError, setImageError] = useState('');
 
   useEffect(() => {
     getPost(slug)
       .then(post => {
         setPostId(post.id);
+        setFeaturedImage(post.featured_image || null);
         setForm({
           title: post.title,
           content: post.content,
@@ -36,6 +41,32 @@ export default function EditPost() {
       })
       .catch(e => setServerError(e.message));
   }, [slug]);
+
+  async function handleImageSelect(file) {
+    setImageError('');
+    setImageUploading(true);
+    try {
+      const updated = await uploadFeaturedImage(postId, file);
+      setFeaturedImage(updated.featured_image);
+    } catch (e) {
+      setImageError(e.message);
+    } finally {
+      setImageUploading(false);
+    }
+  }
+
+  async function handleImageRemove() {
+    setImageError('');
+    setImageUploading(true);
+    try {
+      await removeFeaturedImage(postId);
+      setFeaturedImage(null);
+    } catch (e) {
+      setImageError(e.message);
+    } finally {
+      setImageUploading(false);
+    }
+  }
 
   function validate() {
     const e = {};
@@ -82,10 +113,18 @@ export default function EditPost() {
 
       {serverError && <p className={styles.serverError}>{serverError}</p>}
 
-      {form && tab === 'preview' && <PostPreview {...form} />}
+      {form && tab === 'preview' && <PostPreview {...form} featuredImage={featuredImage} />}
 
       {form && tab === 'write' && (
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
+          <FeaturedImageField
+            previewUrl={featuredImage}
+            onSelect={handleImageSelect}
+            onRemove={handleImageRemove}
+            uploading={imageUploading}
+            error={imageError}
+          />
+
           <div className={styles.field}>
             <label>Title *</label>
             <input name="title" value={form.title} onChange={handleChange} placeholder="Post title" />

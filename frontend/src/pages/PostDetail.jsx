@@ -42,6 +42,7 @@ export default function PostDetail() {
         </div>
       </div>
       <article className={styles.article}>
+        {post.featured_image && <img src={post.featured_image} alt="" className={styles.featuredImage} />}
         <div className={styles.meta}>
           <span className={`${styles.badge} ${styles[post.status]}`}>{post.status}</span>
           <span className={styles.category}>{post.category}</span>

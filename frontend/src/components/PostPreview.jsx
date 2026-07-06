@@ -1,7 +1,7 @@
 import { renderMarkdown } from '../utils/markdown';
 import styles from './PostPreview.module.css';
 
-export default function PostPreview({ title, content, author, category, status, tags = [], excerpt }) {
+export default function PostPreview({ title, content, author, category, status, tags = [], excerpt, featuredImage }) {
   const isEmpty = !title && !content && !author;
 
   if (isEmpty) {
@@ -14,6 +14,7 @@ export default function PostPreview({ title, content, author, category, status, 
 
   return (
     <article className={styles.article}>
+      {featuredImage && <img src={featuredImage} alt="" className={styles.featuredImage} />}
       <div className={styles.meta}>
         <span className={`${styles.badge} ${styles[status]}`}>{status || 'draft'}</span>
         {category && <span className={styles.category}>{category}</span>}

@@ -52,6 +52,30 @@ export async function createPost(data) {
   return res.json();
 }
 
+export async function uploadFeaturedImage(id, file) {
+  const formData = new FormData();
+  formData.append('image', file);
+  const res = await fetch(`${BASE}/${id}/image`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: formData,
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Failed to upload image');
+  }
+  return res.json();
+}
+
+export async function removeFeaturedImage(id) {
+  const res = await fetch(`${BASE}/${id}/image`, { method: 'DELETE', headers: authHeaders() });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Failed to remove image');
+  }
+  return res.json();
+}
+
 export async function bulkAction(ids, action) {
   const res = await fetch(`${BASE}/bulk`, {
     method: 'POST',

@@ -5,6 +5,14 @@
   padding: 2rem;
 }
 
+.featuredImage {
+  width: 100%;
+  max-height: 360px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
 .empty {
   background: #1e1e2e;
   border: 1px dashed #45475a;

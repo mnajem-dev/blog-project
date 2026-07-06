@@ -9,6 +9,9 @@ node_modules/
 # Database
 backend/blog.db
 
+# Uploaded files
+backend/uploads/
+
 # Build output
 dist/
 build/

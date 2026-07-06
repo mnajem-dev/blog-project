@@ -1,9 +1,10 @@
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createPost } from '../api/posts';
+import { createPost, uploadFeaturedImage } from '../api/posts';
 import PostPreview from '../components/PostPreview';
 import TagInput from '../components/TagInput';
 import MarkdownToolbar from '../components/MarkdownToolbar';
+import FeaturedImageField from '../components/FeaturedImageField';
 import styles from './CreatePost.module.css';
 
 const CATEGORIES = ['General', 'Tech', 'Design', 'Business', 'Lifestyle'];
@@ -23,6 +24,15 @@ export default function CreatePost() {
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState('');
   const [tab, setTab] = useState('write');
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageError, setImageError] = useState('');
+
+  function handleImageSelect(file) {
+    setImageError('');
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  }
 
   function validate() {
     const e = {};
@@ -54,6 +64,13 @@ export default function CreatePost() {
     setServerError('');
     try {
       const post = await createPost(form);
+      if (imageFile) {
+        try {
+          await uploadFeaturedImage(post.id, imageFile);
+        } catch (imgErr) {
+          setImageError(imgErr.message);
+        }
+      }
       navigate(`/posts/${post.slug}`);
     } catch (err) {
       setServerError(err.message);
@@ -75,9 +92,16 @@ export default function CreatePost() {
       {serverError && <p className={styles.serverError}>{serverError}</p>}
 
       {tab === 'preview' ? (
-        <PostPreview {...form} />
+        <PostPreview {...form} featuredImage={imagePreview} />
       ) : (
       <form className={styles.form} onSubmit={handleSubmit} noValidate>
+        <FeaturedImageField
+          previewUrl={imagePreview}
+          onSelect={handleImageSelect}
+          onRemove={() => { setImageFile(null); setImagePreview(null); }}
+          error={imageError}
+        />
+
         <div className={styles.field}>
           <label>Title *</label>
           <input name="title" value={form.title} onChange={handleChange} placeholder="Post title" />

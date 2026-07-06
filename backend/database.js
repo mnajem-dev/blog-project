@@ -48,6 +48,10 @@ async function getDb() {
     try {
       await db.exec(`ALTER TABLE posts ADD COLUMN excerpt TEXT NOT NULL DEFAULT ''`);
     } catch (_) { /* column already exists */ }
+    // Idempotent migration: add featured_image column (relative /uploads URL)
+    try {
+      await db.exec(`ALTER TABLE posts ADD COLUMN featured_image TEXT DEFAULT NULL`);
+    } catch (_) { /* column already exists */ }
 
     await db.exec(`
       CREATE TABLE IF NOT EXISTS users (

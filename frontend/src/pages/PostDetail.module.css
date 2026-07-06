@@ -61,6 +61,14 @@
   padding: 2rem;
 }
 
+.featuredImage {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
 .meta {
   display: flex;
   align-items: center;

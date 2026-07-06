@@ -1,0 +1,91 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.field label {
+  color: #a6adc8;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.pickBtn {
+  align-self: flex-start;
+  background: #181825;
+  border: 1px dashed #45475a;
+  color: #a6adc8;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.pickBtn:hover:not(:disabled) {
+  border-color: #cba6f7;
+  color: #cba6f7;
+}
+
+.pickBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.preview {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.previewImg {
+  width: 160px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #45475a;
+}
+
+.previewActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.replaceBtn {
+  background: #313244;
+  border: 1px solid #45475a;
+  color: #cdd6f4;
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.replaceBtn:hover:not(:disabled) { background: #45475a; }
+
+.removeBtn {
+  background: transparent;
+  border: 1px solid #f38ba8;
+  color: #f38ba8;
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.removeBtn:hover:not(:disabled) { background: #f38ba8; color: #1e1e2e; }
+
+.replaceBtn:disabled,
+.removeBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.err {
+  color: #f38ba8;
+  font-size: 0.8rem;
+}
