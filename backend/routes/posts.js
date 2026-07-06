@@ -31,6 +31,15 @@ async function uniqueSlug(db, base, excludeId = null) {
   }
 }
 
+const SORTABLE_COLUMNS = {
+  id: 'id',
+  title: 'title',
+  author: 'author',
+  category: 'category',
+  status: 'status',
+  date: 'COALESCE(published_at, created_at)',
+};
+
 router.get('/', async (req, res) => {
   try {
     const db = await getDb();
@@ -38,6 +47,8 @@ router.get('/', async (req, res) => {
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 10));
     const offset = (page - 1) * limit;
+    const sortColumn = SORTABLE_COLUMNS[req.query.sortBy] || SORTABLE_COLUMNS.date;
+    const sortOrder = req.query.sortOrder === 'asc' ? 'ASC' : 'DESC';
 
     let where = '';
     const params = [];
@@ -54,7 +65,7 @@ router.get('/', async (req, res) => {
 
     const { total } = await db.get(`SELECT COUNT(*) AS total FROM posts${where}`, params);
     const posts = await db.all(
-      `SELECT * FROM posts${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+      `SELECT * FROM posts${where} ORDER BY ${sortColumn} ${sortOrder} LIMIT ? OFFSET ?`,
       [...params, limit, offset]
     );
 

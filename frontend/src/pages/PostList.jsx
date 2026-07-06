@@ -6,6 +6,22 @@ import styles from './PostList.module.css';
 const CATEGORIES = ['', 'General', 'Tech', 'Design', 'Business', 'Lifestyle'];
 const PAGE_SIZE = 10;
 
+function SortableHeader({ column, sort, onSort, children }) {
+  const active = sort.sortBy === column;
+  return (
+    <th
+      className={styles.sortableHeader}
+      onClick={() => onSort(column)}
+      aria-sort={active ? (sort.sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
+    >
+      {children}
+      <span className={`${styles.sortIcon} ${active ? styles.sortIconActive : ''}`}>
+        {active ? (sort.sortOrder === 'asc' ? '▲' : '▼') : '⇅'}
+      </span>
+    </th>
+  );
+}
+
 export default function PostList() {
   const [posts, setPosts] = useState([]);
   const [total, setTotal] = useState(0);
@@ -15,6 +31,14 @@ export default function PostList() {
   const [filters, setFilters] = useState({ status: '', category: '', search: '' });
   const [searchInput, setSearchInput] = useState('');
   const [deletingId, setDeletingId] = useState(null);
+  const [sort, setSort] = useState({ sortBy: 'date', sortOrder: 'desc' });
+
+  function toggleSort(column) {
+    setSort(s => s.sortBy === column
+      ? { sortBy: column, sortOrder: s.sortOrder === 'asc' ? 'desc' : 'asc' }
+      : { sortBy: column, sortOrder: 'asc' });
+    setPage(1);
+  }
 
   async function handleDelete(id) {
     if (!window.confirm('Delete this post? This cannot be undone.')) return;
@@ -41,7 +65,7 @@ export default function PostList() {
 
   useEffect(() => {
     setLoading(true);
-    const params = { page, limit: PAGE_SIZE };
+    const params = { page, limit: PAGE_SIZE, sortBy: sort.sortBy, sortOrder: sort.sortOrder };
     if (filters.status) params.status = filters.status;
     if (filters.category) params.category = filters.category;
     if (filters.search) params.search = filters.search;
@@ -50,7 +74,7 @@ export default function PostList() {
       .then(res => { setPosts(res.data); setTotal(res.total); })
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
-  }, [filters, page]);
+  }, [filters, page, sort]);
 
   return (
     <div className={styles.container}>
@@ -94,12 +118,12 @@ export default function PostList() {
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>#</th>
-                <th>Title</th>
-                <th>Author</th>
-                <th>Category</th>
-                <th>Status</th>
-                <th>Date</th>
+                <SortableHeader column="id" sort={sort} onSort={toggleSort}>#</SortableHeader>
+                <SortableHeader column="title" sort={sort} onSort={toggleSort}>Title</SortableHeader>
+                <SortableHeader column="author" sort={sort} onSort={toggleSort}>Author</SortableHeader>
+                <SortableHeader column="category" sort={sort} onSort={toggleSort}>Category</SortableHeader>
+                <SortableHeader column="status" sort={sort} onSort={toggleSort}>Status</SortableHeader>
+                <SortableHeader column="date" sort={sort} onSort={toggleSort}>Date</SortableHeader>
                 <th>Actions</th>
               </tr>
             </thead>

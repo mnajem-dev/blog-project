@@ -116,6 +116,28 @@
   text-align: left;
 }
 
+.sortableHeader {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+.sortableHeader:hover {
+  color: #cdd6f4;
+}
+
+.sortIcon {
+  display: inline-block;
+  margin-left: 0.35rem;
+  color: #45475a;
+  font-size: 0.7rem;
+}
+
+.sortIconActive {
+  color: #cba6f7;
+}
+
 .table tbody tr {
   background: #1e1e2e;
   border-top: 1px solid #313244;
