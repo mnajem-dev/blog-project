@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getPost, deletePost } from '../api/posts';
+import { renderMarkdown } from '../utils/markdown';
 import styles from './PostDetail.module.css';
 
 export default function PostDetail() {
@@ -55,7 +56,7 @@ export default function PostDetail() {
           <p className={styles.edited}>Last edited {new Date(post.updated_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
         )}
         {post.excerpt && <p className={styles.excerpt}>{post.excerpt}</p>}
-        <div className={styles.content}>{post.content}</div>
+        <div className={styles.content} dangerouslySetInnerHTML={{ __html: renderMarkdown(post.content) }} />
         {post.tags && post.tags.length > 0 && (
           <div className={styles.tags}>
             {post.tags.map(tag => <span key={tag} className={styles.tag}>{tag}</span>)}

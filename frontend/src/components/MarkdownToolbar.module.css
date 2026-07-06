@@ -1,0 +1,30 @@
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  background: #181825;
+  border: 1px solid #45475a;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  padding: 0.4rem;
+}
+
+.btn {
+  background: #313244;
+  border: 1px solid #45475a;
+  color: #cdd6f4;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn:hover {
+  background: #45475a;
+  color: #cba6f7;
+}
+
+.bold { font-weight: 700; }
+.italic { font-style: italic; }

@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getPost, updatePost } from '../api/posts';
 import PostPreview from '../components/PostPreview';
 import TagInput from '../components/TagInput';
+import MarkdownToolbar from '../components/MarkdownToolbar';
 import styles from './CreatePost.module.css';
 
 const CATEGORIES = ['General', 'Tech', 'Design', 'Business', 'Lifestyle'];
@@ -10,6 +11,7 @@ const CATEGORIES = ['General', 'Tech', 'Design', 'Business', 'Lifestyle'];
 export default function EditPost() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const contentRef = useRef(null);
   const [postId, setPostId] = useState(null);
   const [form, setForm] = useState(null);
   const [errors, setErrors] = useState({});
@@ -130,12 +132,19 @@ export default function EditPost() {
 
           <div className={styles.field}>
             <label>Content *</label>
+            <MarkdownToolbar
+              textareaRef={contentRef}
+              value={form.content}
+              onChange={content => setForm(f => ({ ...f, content }))}
+            />
             <textarea
               name="content"
+              ref={contentRef}
               value={form.content}
               onChange={handleChange}
-              placeholder="Write your post content..."
+              placeholder="Write your post content... (Markdown supported)"
               rows={12}
+              className={styles.markdownArea}
             />
             {errors.content && <span className={styles.err}>{errors.content}</span>}
           </div>

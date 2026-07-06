@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPost } from '../api/posts';
 import PostPreview from '../components/PostPreview';
 import TagInput from '../components/TagInput';
+import MarkdownToolbar from '../components/MarkdownToolbar';
 import styles from './CreatePost.module.css';
 
 const CATEGORIES = ['General', 'Tech', 'Design', 'Business', 'Lifestyle'];
@@ -15,6 +16,7 @@ function clientSlugify(text) {
 
 export default function CreatePost() {
   const navigate = useNavigate();
+  const contentRef = useRef(null);
   const [form, setForm] = useState(INITIAL);
   const [slugLocked, setSlugLocked] = useState(false);
   const [errors, setErrors] = useState({});
@@ -122,12 +124,19 @@ export default function CreatePost() {
 
         <div className={styles.field}>
           <label>Content *</label>
+          <MarkdownToolbar
+            textareaRef={contentRef}
+            value={form.content}
+            onChange={content => setForm(f => ({ ...f, content }))}
+          />
           <textarea
             name="content"
+            ref={contentRef}
             value={form.content}
             onChange={handleChange}
-            placeholder="Write your post content..."
+            placeholder="Write your post content... (Markdown supported)"
             rows={12}
+            className={styles.markdownArea}
           />
           {errors.content && <span className={styles.err}>{errors.content}</span>}
         </div>

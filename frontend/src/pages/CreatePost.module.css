@@ -104,6 +104,12 @@
   line-height: 1.6;
 }
 
+.markdownArea {
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  font-family: 'SF Mono', Consolas, monospace;
+}
+
 .err {
   color: #f38ba8;
   font-size: 0.8rem;
