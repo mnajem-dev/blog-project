@@ -55,6 +55,14 @@
   margin-bottom: 1.5rem;
 }
 
+.excerpt {
+  color: #a6adc8;
+  font-size: 1rem;
+  font-style: italic;
+  line-height: 1.6;
+  margin: -0.75rem 0 1.5rem;
+}
+
 .content {
   color: #bac2de;
   line-height: 1.7;

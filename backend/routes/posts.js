@@ -80,7 +80,7 @@ router.get('/:identifier', async (req, res) => {
 
 router.post('/', requireAuth, async (req, res) => {
   try {
-    const { title, content, author, category = 'General', status = 'draft', tags, slug: rawSlug } = req.body;
+    const { title, content, author, category = 'General', status = 'draft', tags, slug: rawSlug, excerpt = '' } = req.body;
 
     if (!title || !content || !author) {
       return res.status(400).json({ error: 'title, content, and author are required' });
@@ -94,8 +94,8 @@ router.post('/', requireAuth, async (req, res) => {
     const db = await getDb();
     const slug = await uniqueSlug(db, slugify(rawSlug || title));
     const result = await db.run(
-      'INSERT INTO posts (title, content, author, category, status, tags, published_at, slug) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [title, content, author, category, status, joinTags(tags), publishedAt, slug]
+      'INSERT INTO posts (title, content, author, category, status, tags, published_at, slug, excerpt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [title, content, author, category, status, joinTags(tags), publishedAt, slug, excerpt.trim()]
     );
     const post = await db.get('SELECT * FROM posts WHERE id = ?', result.lastID);
     res.status(201).json(parseTags(post));
@@ -110,7 +110,7 @@ router.put('/:id', requireAuth, async (req, res) => {
     const existing = await db.get('SELECT * FROM posts WHERE id = ?', req.params.id);
     if (!existing) return res.status(404).json({ error: 'Post not found' });
 
-    const { title, content, author, category = existing.category, status = existing.status, tags, slug: rawSlug } = req.body;
+    const { title, content, author, category = existing.category, status = existing.status, tags, slug: rawSlug, excerpt } = req.body;
 
     if (!title || !content || !author) {
       return res.status(400).json({ error: 'title, content, and author are required' });
@@ -120,6 +120,7 @@ router.put('/:id', requireAuth, async (req, res) => {
     }
 
     const tagsValue = tags !== undefined ? joinTags(tags) : existing.tags;
+    const excerptValue = excerpt !== undefined ? excerpt.trim() : existing.excerpt;
     const publishedAt = (status === 'published' && !existing.published_at)
       ? new Date().toISOString().slice(0, 19).replace('T', ' ')
       : existing.published_at;
@@ -129,8 +130,8 @@ router.put('/:id', requireAuth, async (req, res) => {
       : existing.slug;
 
     await db.run(
-      'UPDATE posts SET title = ?, content = ?, author = ?, category = ?, status = ?, tags = ?, published_at = ?, updated_at = ?, slug = ? WHERE id = ?',
-      [title, content, author, category, status, tagsValue, publishedAt, updatedAt, slugValue, req.params.id]
+      'UPDATE posts SET title = ?, content = ?, author = ?, category = ?, status = ?, tags = ?, published_at = ?, updated_at = ?, slug = ?, excerpt = ? WHERE id = ?',
+      [title, content, author, category, status, tagsValue, publishedAt, updatedAt, slugValue, excerptValue, req.params.id]
     );
     const post = await db.get('SELECT * FROM posts WHERE id = ?', req.params.id);
     res.json(parseTags(post));

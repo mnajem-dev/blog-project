@@ -7,7 +7,7 @@ import styles from './CreatePost.module.css';
 
 const CATEGORIES = ['General', 'Tech', 'Design', 'Business', 'Lifestyle'];
 
-const INITIAL = { title: '', content: '', author: '', category: 'General', status: 'draft', tags: [], slug: '' };
+const INITIAL = { title: '', content: '', author: '', category: 'General', status: 'draft', tags: [], slug: '', excerpt: '' };
 
 function clientSlugify(text) {
   return text.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
@@ -107,6 +107,17 @@ export default function CreatePost() {
               <option value="published">Published</option>
             </select>
           </div>
+        </div>
+
+        <div className={styles.field}>
+          <label>Excerpt</label>
+          <textarea
+            name="excerpt"
+            value={form.excerpt}
+            onChange={handleChange}
+            placeholder="A short summary shown in the post list..."
+            rows={2}
+          />
         </div>
 
         <div className={styles.field}>

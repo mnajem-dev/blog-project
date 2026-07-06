@@ -107,7 +107,10 @@ export default function PostList() {
               {posts.map(post => (
                 <tr key={post.id}>
                   <td>{post.id}</td>
-                  <td className={styles.title}>{post.title}</td>
+                  <td className={styles.title}>
+                    {post.title}
+                    {post.excerpt && <p className={styles.excerpt}>{post.excerpt}</p>}
+                  </td>
                   <td>{post.author}</td>
                   <td><span className={styles.category}>{post.category}</span></td>
                   <td>

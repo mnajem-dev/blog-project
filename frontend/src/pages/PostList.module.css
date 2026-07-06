@@ -126,10 +126,19 @@
 .table tbody tr:hover { background: #252536; }
 
 .title {
-  max-width: 260px;
+  max-width: 320px;
+}
+
+.excerpt {
+  margin: 0.25rem 0 0;
+  color: #6c7086;
+  font-size: 0.8rem;
+  font-weight: 400;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
 }
 
 .category {

@@ -44,6 +44,10 @@ async function getDb() {
         await db.run(`UPDATE posts SET slug = ? WHERE id = ?`, [`${base}-${row.id}`, row.id]);
       }
     } catch (_) { /* column already exists */ }
+    // Idempotent migration: add excerpt column for post list previews
+    try {
+      await db.exec(`ALTER TABLE posts ADD COLUMN excerpt TEXT NOT NULL DEFAULT ''`);
+    } catch (_) { /* column already exists */ }
 
     await db.exec(`
       CREATE TABLE IF NOT EXISTS users (

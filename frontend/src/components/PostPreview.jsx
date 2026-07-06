@@ -1,6 +1,6 @@
 import styles from './PostPreview.module.css';
 
-export default function PostPreview({ title, content, author, category, status, tags = [] }) {
+export default function PostPreview({ title, content, author, category, status, tags = [], excerpt }) {
   const isEmpty = !title && !content && !author;
 
   if (isEmpty) {
@@ -22,6 +22,7 @@ export default function PostPreview({ title, content, author, category, status, 
       </div>
       <h1 className={styles.title}>{title || <em className={styles.placeholder}>Untitled</em>}</h1>
       {author && <p className={styles.author}>By {author}</p>}
+      {excerpt && <p className={styles.excerpt}>{excerpt}</p>}
       <div className={styles.content}>
         {content || <em className={styles.placeholder}>No content yet.</em>}
       </div>

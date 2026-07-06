@@ -29,6 +29,7 @@ export default function EditPost() {
           status: post.status,
           tags: post.tags || [],
           slug: post.slug,
+          excerpt: post.excerpt || '',
         });
       })
       .catch(e => setServerError(e.message));
@@ -114,6 +115,17 @@ export default function EditPost() {
                 <option value="published">Published</option>
               </select>
             </div>
+          </div>
+
+          <div className={styles.field}>
+            <label>Excerpt</label>
+            <textarea
+              name="excerpt"
+              value={form.excerpt}
+              onChange={handleChange}
+              placeholder="A short summary shown in the post list..."
+              rows={2}
+            />
           </div>
 
           <div className={styles.field}>
