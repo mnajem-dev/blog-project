@@ -100,10 +100,11 @@ router.put('/:id', async (req, res) => {
     const publishedAt = (status === 'published' && !existing.published_at)
       ? new Date().toISOString().slice(0, 19).replace('T', ' ')
       : existing.published_at;
+    const updatedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
     await db.run(
-      'UPDATE posts SET title = ?, content = ?, author = ?, category = ?, status = ?, tags = ?, published_at = ? WHERE id = ?',
-      [title, content, author, category, status, tagsValue, publishedAt, req.params.id]
+      'UPDATE posts SET title = ?, content = ?, author = ?, category = ?, status = ?, tags = ?, published_at = ?, updated_at = ? WHERE id = ?',
+      [title, content, author, category, status, tagsValue, publishedAt, updatedAt, req.params.id]
     );
     const post = await db.get('SELECT * FROM posts WHERE id = ?', req.params.id);
     res.json(parseTags(post));

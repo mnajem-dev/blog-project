@@ -100,7 +100,14 @@
 .author {
   color: #a6adc8;
   font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.edited {
+  color: #6c7086;
+  font-size: 0.8rem;
   margin-bottom: 1.5rem;
+  font-style: italic;
 }
 
 .content {

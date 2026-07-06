@@ -51,6 +51,9 @@ export default function PostDetail() {
         </div>
         <h1 className={styles.title}>{post.title}</h1>
         <p className={styles.author}>By {post.author}</p>
+        {post.updated_at && (
+          <p className={styles.edited}>Last edited {new Date(post.updated_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        )}
         <div className={styles.content}>{post.content}</div>
         {post.tags && post.tags.length > 0 && (
           <div className={styles.tags}>

@@ -30,6 +30,10 @@ async function getDb() {
       await db.exec(`ALTER TABLE posts ADD COLUMN published_at DATETIME DEFAULT NULL`);
       await db.exec(`UPDATE posts SET published_at = created_at WHERE status = 'published' AND published_at IS NULL`);
     } catch (_) { /* column already exists */ }
+    // Idempotent migration: add updated_at column (NULL = never edited after creation)
+    try {
+      await db.exec(`ALTER TABLE posts ADD COLUMN updated_at DATETIME DEFAULT NULL`);
+    } catch (_) { /* column already exists */ }
   }
   return db;
 }
