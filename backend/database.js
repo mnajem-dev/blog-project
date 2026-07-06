@@ -34,6 +34,15 @@ async function getDb() {
     try {
       await db.exec(`ALTER TABLE posts ADD COLUMN updated_at DATETIME DEFAULT NULL`);
     } catch (_) { /* column already exists */ }
+    // Idempotent migration: add slug column and backfill from title + id
+    try {
+      await db.exec(`ALTER TABLE posts ADD COLUMN slug TEXT NOT NULL DEFAULT ''`);
+      const rows = await db.all(`SELECT id, title FROM posts WHERE slug = ''`);
+      for (const row of rows) {
+        const base = row.title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'post';
+        await db.run(`UPDATE posts SET slug = ? WHERE id = ?`, [`${base}-${row.id}`, row.id]);
+      }
+    } catch (_) { /* column already exists */ }
   }
   return db;
 }

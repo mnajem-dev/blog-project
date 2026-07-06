@@ -8,8 +8,9 @@ import styles from './CreatePost.module.css';
 const CATEGORIES = ['General', 'Tech', 'Design', 'Business', 'Lifestyle'];
 
 export default function EditPost() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
+  const [postId, setPostId] = useState(null);
   const [form, setForm] = useState(null);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -17,17 +18,21 @@ export default function EditPost() {
   const [tab, setTab] = useState('write');
 
   useEffect(() => {
-    getPost(id)
-      .then(post => setForm({
-        title: post.title,
-        content: post.content,
-        author: post.author,
-        category: post.category,
-        status: post.status,
-        tags: post.tags || [],
-      }))
+    getPost(slug)
+      .then(post => {
+        setPostId(post.id);
+        setForm({
+          title: post.title,
+          content: post.content,
+          author: post.author,
+          category: post.category,
+          status: post.status,
+          tags: post.tags || [],
+          slug: post.slug,
+        });
+      })
       .catch(e => setServerError(e.message));
-  }, [id]);
+  }, [slug]);
 
   function validate() {
     const e = {};
@@ -51,8 +56,8 @@ export default function EditPost() {
     setSubmitting(true);
     setServerError('');
     try {
-      await updatePost(id, form);
-      navigate(`/posts/${id}`);
+      const updated = await updatePost(postId, form);
+      navigate(`/posts/${updated.slug}`);
     } catch (err) {
       setServerError(err.message);
     } finally {
@@ -82,6 +87,12 @@ export default function EditPost() {
             <label>Title *</label>
             <input name="title" value={form.title} onChange={handleChange} placeholder="Post title" />
             {errors.title && <span className={styles.err}>{errors.title}</span>}
+          </div>
+
+          <div className={styles.field}>
+            <label>Slug</label>
+            <input name="slug" value={form.slug} onChange={handleChange} placeholder="url-friendly-slug" />
+            <span className={styles.slugHint}>/posts/{form.slug}</span>
           </div>
 
           <div className={styles.row}>
@@ -123,7 +134,7 @@ export default function EditPost() {
           </div>
 
           <div className={styles.actions}>
-            <button type="button" className={styles.cancelBtn} onClick={() => navigate(`/posts/${id}`)}>
+            <button type="button" className={styles.cancelBtn} onClick={() => navigate(`/posts/${slug}`)}>
               Cancel
             </button>
             <button type="submit" className={styles.submitBtn} disabled={submitting}>
@@ -133,6 +144,5 @@ export default function EditPost() {
         </form>
       )}
     </div>
-
   );
 }

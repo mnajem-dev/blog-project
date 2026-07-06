@@ -12,8 +12,8 @@ export default function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<PostList />} />
-        <Route path="/posts/:id" element={<PostDetail />} />
-        <Route path="/posts/:id/edit" element={<EditPost />} />
+        <Route path="/posts/:slug" element={<PostDetail />} />
+        <Route path="/posts/:slug/edit" element={<EditPost />} />
         <Route path="/create" element={<CreatePost />} />
       </Routes>
     </BrowserRouter>

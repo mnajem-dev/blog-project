@@ -119,7 +119,7 @@ export default function PostList() {
                     {new Date(post.published_at || post.created_at).toLocaleDateString()}
                   </td>
                   <td className={styles.actionCell}>
-                    <Link to={`/posts/${post.id}`} className={styles.viewBtn}>View</Link>
+                    <Link to={`/posts/${post.slug}`} className={styles.viewBtn}>View</Link>
                     <button
                       onClick={() => handleDelete(post.id)}
                       disabled={deletingId === post.id}

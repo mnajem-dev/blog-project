@@ -4,7 +4,7 @@ import { getPost, deletePost } from '../api/posts';
 import styles from './PostDetail.module.css';
 
 export default function PostDetail() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
   const [error, setError] = useState('');
@@ -14,7 +14,7 @@ export default function PostDetail() {
     if (!window.confirm('Delete this post? This cannot be undone.')) return;
     setDeleting(true);
     try {
-      await deletePost(id);
+      await deletePost(post.id);
       navigate('/');
     } catch (e) {
       setError(e.message);
@@ -23,8 +23,8 @@ export default function PostDetail() {
   }
 
   useEffect(() => {
-    getPost(id).then(setPost).catch(e => setError(e.message));
-  }, [id]);
+    getPost(slug).then(setPost).catch(e => setError(e.message));
+  }, [slug]);
 
   if (error) return <div className={styles.container}><p className={styles.error}>{error}</p></div>;
   if (!post) return <div className={styles.container}><p className={styles.loading}>Loading...</p></div>;
@@ -34,7 +34,7 @@ export default function PostDetail() {
       <div className={styles.topBar}>
         <Link to="/" className={styles.back}>← Back to posts</Link>
         <div className={styles.actions}>
-          <Link to={`/posts/${post.id}/edit`} className={styles.editBtn}>Edit</Link>
+          <Link to={`/posts/${post.slug}/edit`} className={styles.editBtn}>Edit</Link>
           <button onClick={handleDelete} disabled={deleting} className={styles.deleteBtn}>
             {deleting ? 'Deleting…' : 'Delete'}
           </button>

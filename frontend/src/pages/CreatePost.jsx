@@ -7,11 +7,16 @@ import styles from './CreatePost.module.css';
 
 const CATEGORIES = ['General', 'Tech', 'Design', 'Business', 'Lifestyle'];
 
-const INITIAL = { title: '', content: '', author: '', category: 'General', status: 'draft', tags: [] };
+const INITIAL = { title: '', content: '', author: '', category: 'General', status: 'draft', tags: [], slug: '' };
+
+function clientSlugify(text) {
+  return text.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+}
 
 export default function CreatePost() {
   const navigate = useNavigate();
   const [form, setForm] = useState(INITIAL);
+  const [slugLocked, setSlugLocked] = useState(false);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState('');
@@ -27,7 +32,14 @@ export default function CreatePost() {
 
   function handleChange(e) {
     const { name, value } = e.target;
-    setForm(f => ({ ...f, [name]: value }));
+    if (name === 'title') {
+      setForm(f => ({ ...f, title: value, slug: slugLocked ? f.slug : clientSlugify(value) }));
+    } else if (name === 'slug') {
+      setSlugLocked(true);
+      setForm(f => ({ ...f, slug: value }));
+    } else {
+      setForm(f => ({ ...f, [name]: value }));
+    }
     if (errors[name]) setErrors(e => ({ ...e, [name]: '' }));
   }
 
@@ -40,7 +52,7 @@ export default function CreatePost() {
     setServerError('');
     try {
       const post = await createPost(form);
-      navigate(`/posts/${post.id}`);
+      navigate(`/posts/${post.slug}`);
     } catch (err) {
       setServerError(err.message);
     } finally {
@@ -68,6 +80,12 @@ export default function CreatePost() {
           <label>Title *</label>
           <input name="title" value={form.title} onChange={handleChange} placeholder="Post title" />
           {errors.title && <span className={styles.err}>{errors.title}</span>}
+        </div>
+
+        <div className={styles.field}>
+          <label>Slug</label>
+          <input name="slug" value={form.slug} onChange={handleChange} placeholder="url-friendly-slug" />
+          {form.slug && <span className={styles.slugHint}>/posts/{form.slug}</span>}
         </div>
 
         <div className={styles.row}>

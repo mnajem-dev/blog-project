@@ -109,6 +109,12 @@
   font-size: 0.8rem;
 }
 
+.slugHint {
+  color: #6c7086;
+  font-size: 0.8rem;
+  font-family: monospace;
+}
+
 .row {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
