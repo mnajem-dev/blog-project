@@ -44,7 +44,10 @@ export default function PostDetail() {
         <div className={styles.meta}>
           <span className={`${styles.badge} ${styles[post.status]}`}>{post.status}</span>
           <span className={styles.category}>{post.category}</span>
-          <span className={styles.date}>{new Date(post.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+          {post.published_at
+            ? <span className={styles.date}>Published {new Date(post.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+            : <span className={styles.date}>Created {new Date(post.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+          }
         </div>
         <h1 className={styles.title}>{post.title}</h1>
         <p className={styles.author}>By {post.author}</p>

@@ -99,7 +99,7 @@ export default function PostList() {
                 <th>Author</th>
                 <th>Category</th>
                 <th>Status</th>
-                <th>Created At</th>
+                <th>Date</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -115,7 +115,9 @@ export default function PostList() {
                       {post.status}
                     </span>
                   </td>
-                  <td className={styles.date}>{new Date(post.created_at).toLocaleDateString()}</td>
+                  <td className={styles.date}>
+                    {new Date(post.published_at || post.created_at).toLocaleDateString()}
+                  </td>
                   <td className={styles.actionCell}>
                     <Link to={`/posts/${post.id}`} className={styles.viewBtn}>View</Link>
                     <button

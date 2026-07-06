@@ -80,6 +80,8 @@
   border-radius: 4px;
 }
 
+.previewDate { color: #6c7086; font-size: 0.85rem; margin-left: auto; }
+
 .placeholder {
   color: #45475a;
   font-style: italic;

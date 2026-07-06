@@ -25,6 +25,11 @@ async function getDb() {
     try {
       await db.exec(`ALTER TABLE posts ADD COLUMN tags TEXT NOT NULL DEFAULT ''`);
     } catch (_) { /* column already exists */ }
+    // Idempotent migration: add published_at column and backfill existing published posts
+    try {
+      await db.exec(`ALTER TABLE posts ADD COLUMN published_at DATETIME DEFAULT NULL`);
+      await db.exec(`UPDATE posts SET published_at = created_at WHERE status = 'published' AND published_at IS NULL`);
+    } catch (_) { /* column already exists */ }
   }
   return db;
 }

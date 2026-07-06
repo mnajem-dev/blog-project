@@ -66,10 +66,12 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'status must be draft or published' });
     }
 
+    const publishedAt = status === 'published' ? new Date().toISOString().slice(0, 19).replace('T', ' ') : null;
+
     const db = await getDb();
     const result = await db.run(
-      'INSERT INTO posts (title, content, author, category, status, tags) VALUES (?, ?, ?, ?, ?, ?)',
-      [title, content, author, category, status, joinTags(tags)]
+      'INSERT INTO posts (title, content, author, category, status, tags, published_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [title, content, author, category, status, joinTags(tags), publishedAt]
     );
     const post = await db.get('SELECT * FROM posts WHERE id = ?', result.lastID);
     res.status(201).json(parseTags(post));
@@ -94,10 +96,14 @@ router.put('/:id', async (req, res) => {
     }
 
     const tagsValue = tags !== undefined ? joinTags(tags) : existing.tags;
+    // Set published_at only on the first transition to published; preserve it on re-saves
+    const publishedAt = (status === 'published' && !existing.published_at)
+      ? new Date().toISOString().slice(0, 19).replace('T', ' ')
+      : existing.published_at;
 
     await db.run(
-      'UPDATE posts SET title = ?, content = ?, author = ?, category = ?, status = ?, tags = ? WHERE id = ?',
-      [title, content, author, category, status, tagsValue, req.params.id]
+      'UPDATE posts SET title = ?, content = ?, author = ?, category = ?, status = ?, tags = ?, published_at = ? WHERE id = ?',
+      [title, content, author, category, status, tagsValue, publishedAt, req.params.id]
     );
     const post = await db.get('SELECT * FROM posts WHERE id = ?', req.params.id);
     res.json(parseTags(post));

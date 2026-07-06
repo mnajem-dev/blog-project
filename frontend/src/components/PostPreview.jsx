@@ -16,6 +16,9 @@ export default function PostPreview({ title, content, author, category, status, 
       <div className={styles.meta}>
         <span className={`${styles.badge} ${styles[status]}`}>{status || 'draft'}</span>
         {category && <span className={styles.category}>{category}</span>}
+        {status === 'published' && (
+          <span className={styles.previewDate}>Published {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+        )}
       </div>
       <h1 className={styles.title}>{title || <em className={styles.placeholder}>Untitled</em>}</h1>
       {author && <p className={styles.author}>By {author}</p>}
