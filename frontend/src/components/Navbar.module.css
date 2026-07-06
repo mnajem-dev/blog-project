@@ -41,3 +41,25 @@
   background: #313244 !important;
   color: #cba6f7 !important;
 }
+
+.user {
+  color: #a6adc8;
+  font-size: 0.9rem;
+  padding: 0.3rem 0.4rem;
+}
+
+.logoutBtn {
+  background: transparent;
+  border: 1px solid #45475a;
+  color: #a6adc8;
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.logoutBtn:hover {
+  background: #313244;
+  color: #cdd6f4;
+}

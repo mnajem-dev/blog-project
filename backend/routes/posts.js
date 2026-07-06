@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getDb } = require('../database');
+const { requireAuth } = require('../middleware/auth');
 
 function parseTags(post) {
   return { ...post, tags: post.tags ? post.tags.split(',').map(t => t.trim()).filter(Boolean) : [] };
@@ -77,7 +78,7 @@ router.get('/:identifier', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   try {
     const { title, content, author, category = 'General', status = 'draft', tags, slug: rawSlug } = req.body;
 
@@ -103,7 +104,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireAuth, async (req, res) => {
   try {
     const db = await getDb();
     const existing = await db.get('SELECT * FROM posts WHERE id = ?', req.params.id);
@@ -138,7 +139,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, async (req, res) => {
   try {
     const db = await getDb();
     const existing = await db.get('SELECT * FROM posts WHERE id = ?', req.params.id);

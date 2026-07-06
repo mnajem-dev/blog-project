@@ -1,6 +1,7 @@
 const path = require('path');
 const { open } = require('sqlite');
 const sqlite3 = require('sqlite3');
+const bcrypt = require('bcryptjs');
 
 let db;
 
@@ -43,6 +44,23 @@ async function getDb() {
         await db.run(`UPDATE posts SET slug = ? WHERE id = ?`, [`${base}-${row.id}`, row.id]);
       }
     } catch (_) { /* column already exists */ }
+
+    await db.exec(`
+      CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL UNIQUE,
+        password_hash TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    const { count } = await db.get('SELECT COUNT(*) AS count FROM users');
+    if (count === 0) {
+      const username = process.env.ADMIN_USERNAME || 'admin';
+      const password = process.env.ADMIN_PASSWORD || 'admin123';
+      const passwordHash = await bcrypt.hash(password, 10);
+      await db.run('INSERT INTO users (username, password_hash) VALUES (?, ?)', [username, passwordHash]);
+      console.log(`Seeded default admin user "${username}". Set ADMIN_USERNAME/ADMIN_PASSWORD env vars to customize.`);
+    }
   }
   return db;
 }
